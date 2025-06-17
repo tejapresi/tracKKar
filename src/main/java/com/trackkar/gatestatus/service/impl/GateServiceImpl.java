@@ -2,6 +2,7 @@ package com.trackkar.gatestatus.service.impl;
 
 import com.trackkar.gatestatus.entity.Gate;
 import com.trackkar.gatestatus.entity.GateStatus;
+import com.trackkar.gatestatus.exception.ResourceNotFoundException;
 import com.trackkar.gatestatus.repository.GateRepository;
 import com.trackkar.gatestatus.repository.UserRepository;
 import com.trackkar.gatestatus.service.interfaces.GateService;
@@ -26,10 +27,14 @@ public class GateServiceImpl implements GateService {
 
     @Override
     public Gate updateGateStatus(UUID gateId, GateStatus status, UUID updatedBy) {
-        Gate gate = gateRepository.findById(gateId).orElseThrow();
+        Gate gate = gateRepository.findById(gateId)
+                .orElseThrow(() -> new ResourceNotFoundException("Gate not found with ID: " + gateId));
+
         gate.setStatus(status);
         gate.setLastUpdated(Instant.now());
-        gate.setUpdatedBy(userRepository.findById(updatedBy).orElseThrow());
+        gate.setUpdatedBy(userRepository.findById(updatedBy)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + updatedBy)));
+
         return gateRepository.save(gate);
     }
 

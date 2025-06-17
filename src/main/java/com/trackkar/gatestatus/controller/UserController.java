@@ -3,6 +3,7 @@ package com.trackkar.gatestatus.controller;
 import com.trackkar.gatestatus.common.LoginRequest;
 import com.trackkar.gatestatus.entity.User;
 import com.trackkar.gatestatus.service.interfaces.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +32,7 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public User registerUser(@RequestBody User user) {
+    public User registerUser(@Valid @RequestBody User user) {
 
         return userService.createUser(user);
     }
@@ -43,15 +44,17 @@ public class UserController {
             userService.deleteUser(id);
             return ResponseEntity.ok("Successfully deleted the user.");
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body("User not found to delete.");
         }
     }
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
-        System.out.println(loginRequest);
-        boolean success = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
-        return success ? ResponseEntity.ok("Login successful")
-                : ResponseEntity.status(401).body("Invalid credentials");
+        try {
+            String token = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
+            return ResponseEntity.ok(token); // ✅ Return JWT
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(401).body(ex.getMessage());
+        }
     }
 }

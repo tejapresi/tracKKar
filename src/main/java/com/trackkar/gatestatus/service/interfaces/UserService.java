@@ -10,5 +10,5 @@ public interface UserService {
     List<User> getAllUsers();
     User getUserById(UUID id);
     void deleteUser(UUID id);
-    boolean login(String email, String password);
+    String login(String email, String password);
 }

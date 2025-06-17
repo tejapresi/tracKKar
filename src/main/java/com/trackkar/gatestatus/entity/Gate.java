@@ -19,16 +19,25 @@ import java.util.UUID;
 )
 public class Gate {
     @Id
+    @GeneratedValue
     private UUID id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private Double latitude;
+
+    @Column(nullable = false)
     private Double longitude;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private GateStatus status;
 
     private Instant lastUpdated;
 
     @ManyToOne
+    @JoinColumn(name = "updated_by")
     private User updatedBy;
 }
