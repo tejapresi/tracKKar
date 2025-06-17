@@ -27,25 +27,14 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // Disable CSRF since it's a REST API
                 .authorizeHttpRequests(auth -> auth
-                        // Public APIs
-                        .requestMatchers("/gates/**").permitAll()
-                        .requestMatchers("/feedback").permitAll()
-                        .requestMatchers("/auth/**").permitAll()
-
-                        // Role-restricted GateController endpoints
-                        .requestMatchers(HttpMethod.POST, "/api/gates").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/gates/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/feedback").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/feedback/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users/register").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/gates/**/status").hasRole("GATEKEEPER")
-
-                        // Only ADMIN can access the registration endpoint
-                        .requestMatchers("/api/users/register").hasRole("ADMIN")
-
-                        // Only Admins can access admin-specific APIs
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-
-                        // Only Gatekeepers can access their update/status APIs
-                        .requestMatchers("/api/gatekeeper/**").hasRole("GATEKEEPER")
-
-                        // Everything else must be authenticated
+                        .requestMatchers(HttpMethod.POST, "/api/users/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/users/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);;

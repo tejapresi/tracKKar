@@ -1,6 +1,7 @@
 package com.trackkar.gatestatus.controller;
 
-import com.trackkar.gatestatus.common.LoginRequest;
+import com.trackkar.gatestatus.dto.LoginRequest;
+import com.trackkar.gatestatus.dto.UserRegistrationRequest;
 import com.trackkar.gatestatus.entity.User;
 import com.trackkar.gatestatus.service.interfaces.UserService;
 import jakarta.validation.Valid;
@@ -20,27 +21,26 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable UUID id) {
-        System.out.println("Generated UUID: " + id);
         User user = userService.getUserById(id);
         return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
     }
 
     @PostMapping("/register")
-    public User registerUser(@Valid @RequestBody User user) {
-
-        return userService.createUser(user);
+    public ResponseEntity<User> registerUser(@Valid @RequestBody UserRegistrationRequest request) {
+        System.out.println(request);
+        return ResponseEntity.ok(userService.createUser(request));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable UUID id){
+    public ResponseEntity<String> deleteUser(@PathVariable UUID id) {
         User user = userService.getUserById(id);
-        if(user != null){
+        if (user != null) {
             userService.deleteUser(id);
             return ResponseEntity.ok("Successfully deleted the user.");
         } else {
@@ -49,10 +49,10 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<String> login(@Valid @RequestBody LoginRequest loginRequest) {
         try {
             String token = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
-            return ResponseEntity.ok(token); // ✅ Return JWT
+            return ResponseEntity.ok(token);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(401).body(ex.getMessage());
         }

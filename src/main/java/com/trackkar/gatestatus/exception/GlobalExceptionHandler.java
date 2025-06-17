@@ -23,6 +23,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleOtherExceptions(Exception ex) {
+        System.out.println(ex);
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", Instant.now());
         response.put("message", "An unexpected error occurred.");

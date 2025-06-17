@@ -22,8 +22,8 @@ public class GateController {
     }
 
     @GetMapping
-    public List<Gate> getAllGates() {
-        return gateService.getAllGates();
+    public ResponseEntity<List<Gate>> getAllGates() {
+        return ResponseEntity.ok(gateService.getAllGates());
     }
 
     @GetMapping("/{id}")
@@ -33,16 +33,14 @@ public class GateController {
     }
 
     @PostMapping
-    public Gate createGate(@RequestBody Gate gate) {
-        return gateService.createGate(gate);
+    public ResponseEntity<Gate> createGate(@RequestBody Gate gate) {
+        return ResponseEntity.ok(gateService.createGate(gate));
     }
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<Gate> updateGateStatus(
-            @PathVariable UUID id,
-            @RequestParam GateStatus status,
-            @RequestParam UUID updatedBy) {
-
+    public ResponseEntity<Gate> updateGateStatus(@PathVariable UUID id,
+                                                 @RequestParam GateStatus status,
+                                                 @RequestParam UUID updatedBy) {
         Gate updatedGate = gateService.updateGateStatus(id, status, updatedBy);
         return updatedGate != null ? ResponseEntity.ok(updatedGate) : ResponseEntity.notFound().build();
     }

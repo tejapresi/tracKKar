@@ -1,6 +1,8 @@
 package com.trackkar.gatestatus.service.impl;
 
+import com.trackkar.gatestatus.dto.UserRegistrationRequest;
 import com.trackkar.gatestatus.entity.User;
+import com.trackkar.gatestatus.entity.UserRole;
 import com.trackkar.gatestatus.repository.UserRepository;
 import com.trackkar.gatestatus.security.JwtService;
 import com.trackkar.gatestatus.service.interfaces.UserService;
@@ -22,8 +24,22 @@ public class UserServiceImpl implements UserService {
     private JwtService jwtService;
 
     @Override
-    public User createUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+    public User createUser(UserRegistrationRequest request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("Email already registered.");
+        }
+
+        if (userRepository.findByEmail(request.getPhoneNumber()).isPresent()) {
+            throw new IllegalArgumentException("Phone number already registered.");
+        }
+
+        User user = User.builder()
+                .name(request.getName())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .phoneNumber(request.getPhoneNumber())
+                .role(UserRole.valueOf(request.getRole().toUpperCase()))
+                .build();
         return userRepository.save(user);
     }
 

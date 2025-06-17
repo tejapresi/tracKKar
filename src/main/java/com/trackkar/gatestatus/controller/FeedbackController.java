@@ -2,6 +2,7 @@ package com.trackkar.gatestatus.controller;
 
 import com.trackkar.gatestatus.entity.Feedback;
 import com.trackkar.gatestatus.service.interfaces.FeedbackService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,17 +18,17 @@ public class FeedbackController {
     }
 
     @GetMapping
-    public List<Feedback> getAllFeedback() {
-        return feedbackService.getAllFeedbacks();
+    public ResponseEntity<List<Feedback>> getAllFeedback() {
+        return ResponseEntity.ok(feedbackService.getAllFeedbacks());
     }
 
     @PostMapping
-    public Feedback submitFeedback(@RequestBody Feedback feedback) {
-        return feedbackService.submitFeedback(feedback);
+    public ResponseEntity<Feedback> submitFeedback(@RequestBody Feedback feedback) {
+        return ResponseEntity.ok(feedbackService.submitFeedback(feedback));
     }
 
     @GetMapping("/gate/{gateId}")
-    public List<Feedback> getFeedbackForGate(@PathVariable UUID gateId) {
-        return feedbackService.getFeedbackByGateId(gateId);
+    public ResponseEntity<List<Feedback>> getFeedbackForGate(@PathVariable UUID gateId) {
+        return ResponseEntity.ok(feedbackService.getFeedbackByGateId(gateId));
     }
 }
