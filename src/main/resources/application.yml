@@ -7,3 +7,9 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+jwt:
+  secret: your-very-strong-secret-key-for-signing
+  expiry:
+    admin: 86400  # 24 hours in seconds
+    gatekeeper: 36000  # 10 hours in seconds
