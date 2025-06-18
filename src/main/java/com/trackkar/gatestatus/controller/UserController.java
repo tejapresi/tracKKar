@@ -4,6 +4,7 @@ import com.trackkar.gatestatus.dto.ErrorResponse;
 import com.trackkar.gatestatus.dto.UserLoginRequest;
 import com.trackkar.gatestatus.dto.UserLoginResponse;
 import com.trackkar.gatestatus.dto.UserRegistrationRequest;
+import com.trackkar.gatestatus.dto.UserResponse;
 import com.trackkar.gatestatus.entity.User;
 import com.trackkar.gatestatus.service.interfaces.UserService;
 import jakarta.validation.Valid;
@@ -16,8 +17,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
@@ -43,8 +46,12 @@ public class UserController {
             
             Page<User> userPage = userService.getUsersWithPagination(pageable, role, search);
             
+            List<UserResponse> userResponses = userPage.getContent().stream()
+                    .map(UserResponse::fromUser)
+                    .collect(Collectors.toList());
+            
             Map<String, Object> response = new HashMap<>();
-            response.put("data", userPage.getContent());
+            response.put("data", userResponses);
             response.put("metadata", Map.of(
                 "currentPage", userPage.getNumber(),
                 "totalPages", userPage.getTotalPages(),
@@ -80,7 +87,7 @@ public class UserController {
     public ResponseEntity<?> getUserById(@PathVariable UUID id) {
         User user = userService.getUserById(id);
         if (user != null) {
-            return ResponseEntity.ok(Map.of("user", user));
+            return ResponseEntity.ok(Map.of("user", UserResponse.fromUser(user)));
         } else {
             ErrorResponse errorResponse = ErrorResponse.builder()
                     .timestamp(Instant.now())
@@ -97,7 +104,7 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegistrationRequest request) {
         User user = userService.createUser(request);
-        return ResponseEntity.status(201).body(Map.of("user", user));
+        return ResponseEntity.status(201).body(Map.of("user", UserResponse.fromUser(user)));
     }
 
     @DeleteMapping("/{id}")

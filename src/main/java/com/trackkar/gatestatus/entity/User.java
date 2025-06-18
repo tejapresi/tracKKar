@@ -49,4 +49,8 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private UserRole role;
+
+    @ManyToOne
+    @JoinColumn(name = "assigned_gate")
+    private Gate assignedGate;
 }

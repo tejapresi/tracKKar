@@ -28,9 +28,11 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Disable CSRF since it's a REST API
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/api/gates/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/gates/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/feedback").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/feedback/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users/register").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/gates/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/gates/**/status").hasRole("GATEKEEPER")
                         .requestMatchers(HttpMethod.POST, "/api/users/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/users/**").hasRole("ADMIN")
