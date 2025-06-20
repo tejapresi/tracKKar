@@ -3,6 +3,8 @@ package com.trackkar.gatestatus.controller;
 import com.trackkar.gatestatus.dto.FeedbackResponse;
 import com.trackkar.gatestatus.entity.Feedback;
 import com.trackkar.gatestatus.service.interfaces.FeedbackService;
+import com.trackkar.gatestatus.dto.FeedbackRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,8 +30,8 @@ public class FeedbackController {
     }
 
     @PostMapping
-    public ResponseEntity<FeedbackResponse> submitFeedback(@RequestBody Feedback feedback) {
-        Feedback savedFeedback = feedbackService.submitFeedback(feedback);
+    public ResponseEntity<FeedbackResponse> submitFeedback(@Valid @RequestBody FeedbackRequest feedbackRequest) {
+        Feedback savedFeedback = feedbackService.submitFeedback(feedbackRequest);
         return ResponseEntity.ok(FeedbackResponse.fromFeedback(savedFeedback));
     }
 
